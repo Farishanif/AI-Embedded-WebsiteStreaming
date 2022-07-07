@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request
 import eventlet
-import os
+# import os
 from cryptography.fernet import Fernet
-import threading
+# import threading
 import socketio
 import eventlet.wsgi
-import datetime
-import psycopg2
+# import datetime
+# import psycopg2
+import eventlet.wsgi
 import pyAesCrypt
+
 from waitress import serve
 
 #setup url web
@@ -25,23 +27,23 @@ def stream():
 def about():
 	return render_template('about.html')
 
-def get_db_connection():
-    conn = psycopg2.connect(host='localhost',
-                            database='livestream',
-                            user='postgres',#os.environ['DB_USERNAME'],
-                            password='faris123')#os.environ['DB_PASSWORD'])
-    return conn
+# def get_db_connection():
+#     conn = psycopg2.connect(host='localhost',
+#                             database='livestream',
+#                             user='postgres',#os.environ['DB_USERNAME'],
+#                             password='faris123')#os.environ['DB_PASSWORD'])
+#     return conn
 
-def thread_db(frame):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    id = datetime.datetime.now()
-    cur.execute('INSERT INTO videoframe (id, frame, waktu)'
-                'VALUES (%s, %s, %s)',
-		    	(id, frame,id.time()))
-    conn.commit()
-    cur.close()
-    conn.close()
+# def thread_db(frame):
+#     conn = get_db_connection()
+#     cur = conn.cursor()
+#     id = datetime.datetime.now()
+#     cur.execute('INSERT INTO videoframe (id, frame, waktu)'
+#                 'VALUES (%s, %s, %s)',
+# 		    	(id, frame,id.time()))
+#     conn.commit()
+#     cur.close()
+#     conn.close()
 
 def decrypt(key,source):
     dfile=source.split(".")
@@ -80,8 +82,8 @@ def send(sid, data):
 	key=dict1[sid]
 	# data = decrypt(key,data)
 	print("Reached here")
-	db = threading.Thread(target=thread_db, args=(data,))
-	db.start()
+	# db = threading.Thread(target=thread_db, args=(data,))
+	# db.start()
 	sio.emit('response',{'key':key, 'data':data})
 	pingpong(sid)
 	sio.sleep(0)
@@ -91,6 +93,6 @@ def disconnect(sid):
 	print("[INFO] disconnected from the server")
 
 if __name__ == '__main__':
-	# eventlet.wsgi.server(eventlet.listen(('',5000)), app)
-	serve(app, port=5000, host="192.168.43.46")
+	eventlet.wsgi.server(eventlet.listen(('',5000)), app)
+	# serve(app, port=5000, host="192.168.43.46")
 	
