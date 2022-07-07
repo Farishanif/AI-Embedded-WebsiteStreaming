@@ -4,7 +4,6 @@ import eventlet
 from cryptography.fernet import Fernet
 # import threading
 import socketio
-import eventlet.wsgi
 # import datetime
 # import psycopg2
 import eventlet.wsgi
