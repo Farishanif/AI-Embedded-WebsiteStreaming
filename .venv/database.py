@@ -5,8 +5,8 @@ import psycopg2
 def get_db_connection():
     conn = psycopg2.connect(host='localhost',
                             database='livestream',
-                            user='postgres',#os.environ['DB_USERNAME'],
-                            password='faris123')#os.environ['DB_PASSWORD'])
+                            user='os.environ['DB_USERNAME']',#,
+                            password='os.environ['DB_PASSWORD']')#)
     return conn
 
 def thread_db(frame):
