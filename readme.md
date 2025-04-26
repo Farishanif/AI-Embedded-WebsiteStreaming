@@ -1,4 +1,4 @@
-# AI Embedded Website Streaming
+# LiveStream YoloV4 Detection System
 
 <h2>.VENV</h2>
 <p>.venv is a simple Flask website that can connect into Websocket client on any device with compatible module Socket.io library, used for receiving a live video stream equipped with fernet encrypted reader for each live video stream transmission while also sending each rice disease detected frame into postgreSQL database.</p>
