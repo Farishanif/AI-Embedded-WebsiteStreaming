@@ -1,14 +1,14 @@
+app.py
 from flask import Flask, render_template, request
 import eventlet
 # import os
 from cryptography.fernet import Fernet
 # import threading
 import socketio
+import base64
 # import datetime
 # import psycopg2
 import eventlet.wsgi
-import pyAesCrypt
-
 from waitress import serve
 
 #setup url web
@@ -25,30 +25,6 @@ def stream():
 @app.route('/about')
 def about():
 	return render_template('about.html')
-
-# def get_db_connection():
-#     conn = psycopg2.connect(host='localhost',
-#                             database='livestream',
-#                             user='postgres',#os.environ['DB_USERNAME'],
-#                             password='faris123')#os.environ['DB_PASSWORD'])
-#     return conn
-
-# def thread_db(frame):
-#     conn = get_db_connection()
-#     cur = conn.cursor()
-#     id = datetime.datetime.now()
-#     cur.execute('INSERT INTO videoframe (id, frame, waktu)'
-#                 'VALUES (%s, %s, %s)',
-# 		    	(id, frame,id.time()))
-#     conn.commit()
-#     cur.close()
-#     conn.close()
-
-def decrypt(key,source):
-    dfile=source.split(".")
-    output=dfile[0]+"dec."+dfile[1]
-    output = pyAesCrypt.decryptFile(source,output,key)
-    return output
 
 #setup websocket
 sio = socketio.Server(cors_allowed_origins="*")#async_mode=async_mode)
@@ -70,22 +46,26 @@ def connect(sid, data):
 
 @sio.event
 def send(sid, data):
-	data = data.encode("utf-8")
+	
+	# key = data['key']
+	# f = Fernet(key)
+	# data = f.decrypt(data['frame'])
 	key = b'sPy0VTSyePWQTR7mDmOeJbk6JWS5LfGyO0OJ7uiJxE8='
 	data = Fernet(key).decrypt(data)
+	data = base64.encodebytes(data)
 	data = data.decode("utf-8")
+	# print(data)
 	global i
 	if sid not in dict1:
 		i+=1
 		dict1[sid]=i
 	key=dict1[sid]
-	# data = decrypt(key,data)
 	print("Reached here")
 	# db = threading.Thread(target=thread_db, args=(data,))
 	# db.start()
 	sio.emit('response',{'key':key, 'data':data})
 	pingpong(sid)
-	sio.sleep(0)
+	sio.sleep(20)
 
 @sio.event
 def disconnect(sid):
